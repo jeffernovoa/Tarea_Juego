@@ -8,3 +8,7 @@ class Entity:
 
     def draw(self, screen):
         screen.blit(self.image, (self.x, self.y))
+    
+    def move(self, dx=0, dy=0):
+        self.x += dx
+        self.y += dy
