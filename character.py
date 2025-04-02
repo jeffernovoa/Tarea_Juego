@@ -1,22 +1,18 @@
-import pygame as pg
-from 
-class character(entity):
-    def __init__(self, isalive,lives=3):
-        self.isalive = isalive
-        self.lives = lives
+import pygame
+from entity import Entity
+from shot import Shot
 
-    def __init__(self, isalive, lives=3,):
-        self.isalive = isalive
-        self.lives = lives
+class Character(Entity):
+    def __init__(self, x, y, image, image_path, lives):
         self.x = x
         self.y = y
+        self.image = image
+        self.image_path = image_path
+        self.lives = lives
+        self.rect = self.image.get_rect(topleft=(x, y))
 
-    def move(self, dirección):
-        if dirección == "A":
-            self.x -= 1
-        elif dirección == "D":
-            self.x += 1
-        elif dirección == "W":
-            self.y += 1
-        elif dirección == "S":
-            self.y += 1
+    def shoot(self):
+        return Shot(self.x, self.y)
+
+    def collide(self, other):
+        return self.rect.colliderect(other.rect)

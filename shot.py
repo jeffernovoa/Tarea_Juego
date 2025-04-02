@@ -1,36 +1,27 @@
 import pygame
 from entity import Entity
+import os
 
 class Shot(Entity):
-    def __init__(self, game, character, is_player_shot=True):
-        # Calcular dimensiones del disparo
-        size = int(game.width * 0.015)
-        width, height = size, size
+    def __init__(self, x, y, speed, is_player_shot):
+        # Cargar la imagen según el tipo de disparo
+        try:
+            if is_player_shot:
+                image = pygame.image.load(os.path.join("assets", "shot1.png")).convert_alpha()
+            else:
+                image = pygame.image.load(os.path.join("assets", "shot2.png")).convert_alpha()
+        except pygame.error as e:
+            print(f"Error loading image: {e}")
+            image = pygame.Surface((10, 10))  # Superficie predeterminada
+            image.fill((255, 0, 0))  # Color rojo para visibilidad
 
-        # Calcular posición inicial del disparo
-        x = character.x + character.width // 2 - width // 2
-        y = character.y
+        super().__init__(x, y, image)  # Inicializar la clase base
+        self.speed = speed
 
-        # Configurar velocidad y ruta de la imagen según el tipo de disparo
-        speed = -10 if is_player_shot else 10
-        image_path = 'assets/shot1.png' if is_player_shot else 'assets/shot2.png'
+    def move(self):
+        # Mover el disparo en la dirección correspondiente
+        self.rect.y += self.speed
 
-        # Inicializar la clase base
-        super().__init__(game, width, height, x, y, speed, image_path)
-        self.is_player_shot = is_player_shot
-
-    def update(self):
-        # Actualizar posición del disparo
-        self.y += self.speed
-
-        # Eliminar el disparo si sale de la pantalla
-        if not (0 <= self.y <= self.game.height):
-            self.remove_from_game()
-
-    def remove_from_game(self):
-        # Obtener la lista correspondiente de disparos y eliminar el disparo actual
-        shot_list = self.game.player_shots if self.is_player_shot else self.game.opponent_shots
-        shot_list.discard(self)  # Usar discard para evitar errores si no está en la lista
-
-    def __str__(self):
-        return f"{super().__str__()} (SHOT)"
+    def hit_target(self, target):
+        # Verificar colisión con el objetivo
+        return self.rect.colliderect(target.rect)
